@@ -34,6 +34,7 @@ export default function Login() {
                 <div className="form-container flex column a-center j-center">
                     <div className="form flex column a-center j-center">
                         <div className="title">
+
                             <h3>Login</h3>
                         </div>
                         <div className="container flex column">
@@ -62,8 +63,10 @@ export default function Login() {
                             />
 
 
-                            <button onClick={handleLogIn}>Log In</button>
-                            
+                            <button onClick={handleLogIn}>
+                                Log In
+                            </button>
+
 
                         </div>
                     </div>
