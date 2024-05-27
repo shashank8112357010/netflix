@@ -38,6 +38,7 @@ export default function Login() {
                         </div>
                         <div className="container flex column">
                             <input
+
                                 type="email"
                                 placeholder='Email Address'
                                 name='email'
@@ -63,7 +64,7 @@ export default function Login() {
 
 
                             <button onClick={handleLogIn}>Log In</button>
-                            
+                            {/* assdlfkd */}
 
                         </div>
                     </div>
