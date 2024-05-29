@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styled from "styled-components"
 import BackgroundImage from '../components/BackgroundImage';
 import Header from '../components/Header';
-import {createUserWithEmailAndPassword, onAuthStateChanged} from "firebase/auth";
+import {createUserWithEmailAndPassword, fetchSignInMethodsForEmail, onAuthStateChanged} from "firebase/auth";
 import {firebaseAuth} from "../utils/firebase-config";
 import { useNavigate } from 'react-router-dom';
 
@@ -12,14 +12,40 @@ export default function Signup() {
     const [formValues, setFormValues] = useState({
         email: "",
         password: "",
-    })
+    });
+
+    const [error, setError] = useState("");
+
+    const checkIfEmailExists = async(email)=>{
+        try {
+            const signInMethods = await fetchSignInMethodsForEmail(firebaseAuth, email);
+            return signInMethods.length > 0;
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const handleSignIn = async() =>{
         try {
             const {email, password} = formValues;
-            await createUserWithEmailAndPassword(firebaseAuth, email, password)
+            const emailExists = await checkIfEmailExists(email);
+
+            if(emailExists){
+                setError("Email already exists, Please use a different email!!");
+            }
+            else{
+                await createUserWithEmailAndPassword(firebaseAuth, email, password);
+                setError("");
+            }
         } catch (err) {
-            console.log(err);
+            // console.log(err);
+            // setError("Failed to sign up!! Please try again");
+            console.log("Error during sign-up:", err);
+            if (err.code === 'auth/email-already-in-use') {
+                setError("Email already exists. Please use a different email.");
+            } else {
+                setError("Failed to sign up. Please try again.");
+            }
         }
     };
 
@@ -69,9 +95,9 @@ export default function Signup() {
                         {
                             !showPassword && <button onClick={() => setShowPassword(true)}>Get Started</button>
                         }
-
                     </div>
                     <button onClick={handleSignIn}>Sign Up</button>
+                    {error && <ErrorMessage>{error}</ErrorMessage>}
                 </div>
             </div>
         </Container>
@@ -137,3 +163,9 @@ const Container = styled.div`
         }
     }
 `;
+
+const ErrorMessage = styled.div`
+    color: red;
+    margin-top: 1rem;
+    font-size: 1rem;
+`
